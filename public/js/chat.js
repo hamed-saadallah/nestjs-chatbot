@@ -1,18 +1,22 @@
 const messagesDiv = document.getElementById('messages');
-const userInput = document.getElementById('userInput');
+
 const sendBtn = document.getElementById('sendBtn');
 
-sendBtn.addEventListener('click', async () => {
+initUserInput = () => {
+  const userInput = document.getElementById('userInput');
   const question = userInput.value;
-  if (!question) return;
-
   // Display user's question
   const userMessage = document.createElement('div');
   userMessage.classList.add('user');
   userMessage.innerText = 'You: ' + question;
   messagesDiv.appendChild(userMessage);
   userInput.value = '';
+  return question;
+};
 
+sendBtn.addEventListener('click', async () => {
+  const question = initUserInput();
+  if (!question) return;
   // Send the question to the backend
   try {
     const response = await fetch('http://localhost:3000/chatbot/ask', {
