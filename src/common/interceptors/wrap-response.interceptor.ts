@@ -4,11 +4,11 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { map, Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 
 @Injectable()
 export class WrapResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next.handle().pipe(map((data) => data));
+    return next.handle().pipe(timeout(3000));
   }
 }
