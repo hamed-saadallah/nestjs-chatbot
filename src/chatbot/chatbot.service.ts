@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OpenAI } from 'openai';
+import { CreateChatDto } from './dto/createChatDto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Chat } from './entities/chatlog.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ChatbotService {
-  private apiUrl = 'https://api.openai.com/v1/completions';
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(Chat)
+    private readonly chatRepository: Repository<Chat>,
+  ) {}
   private openai = new OpenAI({
     apiKey: this.configService.get<string>('OPENAI_API_KEY'),
   });
@@ -27,5 +34,13 @@ export class ChatbotService {
       max_tokens: 100,
     });
     return response.choices[0].message.content;
+  }
+  create(chatDto: CreateChatDto) {
+    const chatMessage = this.chatRepository.create(chatDto);
+    return this.chatRepository.save(chatMessage);
+  }
+
+  findAll() {
+    return this.chatRepository.find();
   }
 }
